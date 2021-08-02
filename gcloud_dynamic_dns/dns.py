@@ -4,6 +4,7 @@ from typing import Set, Iterable, Optional
 import requests
 import requests.packages.urllib3.util.connection as urllib3_cn
 from google.cloud import dns
+from google.oauth2 import service_account
 
 IPV4_6 = (socket.AddressFamily.AF_INET, socket.AddressFamily.AF_INET6)
 IPV4 = (socket.AddressFamily.AF_INET,)
@@ -42,7 +43,7 @@ def my_ip(kind: Iterable[socket.AddressFamily] = IPV4_6, query_host: str = "ifco
 
 
 def update_dns(zone_name: str, dns_name: str, ttl: int = 60, force_update: bool = False,
-               project_id: Optional[str] = None):
+               project_id: Optional[str] = None, credentials: Optional[str] = None):
     """
     Updates a GCP Cloud DNS zone with the host's current IP as it appears from the internet
     :param zone_name: the name of the zone in your GCP project
@@ -50,6 +51,7 @@ def update_dns(zone_name: str, dns_name: str, ttl: int = 60, force_update: bool 
     :param ttl: the ttl of the new record
     :param force_update: if True, the records will be updated even if they are not different
     :param project_id: the GCP project id
+    :param credentials: GCP service account credentials dict
     :return: the applied change set
     """
 
@@ -59,10 +61,10 @@ def update_dns(zone_name: str, dns_name: str, ttl: int = 60, force_update: bool 
     if len(resolve_addresses(dns_name).symmetric_difference(my_ip())) == 0 and not force_update:
         return
 
-    if project_id:
-        client = dns.Client(project_id)
-    else:
-        client = dns.Client()
+    if credentials is not None:
+        credentials = service_account.Credentials.from_service_account_info(credentials)
+
+    client = dns.Client(project = project_id, credentials = credentials)
     zone = client.zone(zone_name)
 
     addresses = my_ip()
