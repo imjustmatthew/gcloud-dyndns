@@ -7,14 +7,17 @@ This script can be run in a cron job to periodically update DNS records of a GCP
 connections without a static IP assigned. Supports IPv4 and IPv6.
 
 ## Installation
+
 ```shell script
 pip install -U git+https://github.com/jasonrig/gcloud-dyndns.git
 ```
 
 ## Usage
+
 ```
 $ update-gcloud-dns -h
 usage: update-gcloud-dns [-h] [--ttl TTL] [--project_id PROJECT_ID]
+                         [--credentials_file CREDENTIALS_FILE]
                          [--force_update]
                          zone_name dns_name
 
@@ -27,10 +30,14 @@ optional arguments:
   --ttl TTL             TTL of the update record
   --project_id PROJECT_ID
                         name of the GCP project
+  --credentials_file CREDENTIALS_FILE
+                        file with credentials of service account for GCP
+                        project
   --force_update        force the DNS update even if the record hasn't changed
 ```
 
 ### Example:
+
 ```shell script
-update-gcloud-dns --project_id some-gcp-project-195432 mydnszone test.mydnszone.com
+update-gcloud-dns --project_id some-gcp-project-195432 --credentials_file ~/google_service_account.json mydnszone test.mydnszone.com
 ```
