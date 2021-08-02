@@ -3,6 +3,7 @@ import argparse
 
 from gcloud_dynamic_dns.dns import update_dns
 import json
+import logging
 
 parser = argparse.ArgumentParser()
 parser.add_argument("zone_name", help="the name of the GCP zone to manage")
@@ -13,6 +14,7 @@ parser.add_argument("--credentials_file", default=None, help="file with credenti
 parser.add_argument("--force_update", action="store_true", default=False, help="force the DNS update even if the record hasn't changed")
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     args = parser.parse_args()
 
     credentials = None
@@ -20,4 +22,4 @@ if __name__ == "__main__":
         with open(args.credentials_file) as f:
             credentials = json.load(f)
 
-    update_dns(args.zone_name, args.dns_name, args.ttl, args.force_update, args.project_id, credentials)
+    update_dns(logging.getLogger(), args.zone_name, args.dns_name, args.ttl, args.force_update, args.project_id, credentials)
