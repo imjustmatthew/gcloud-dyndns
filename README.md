@@ -34,6 +34,8 @@ optional arguments:
                         file with credentials of service account for GCP
                         project
   --force_update        force the DNS update even if the record hasn't changed
+  --ip                  specifiy an ip address value, can be used multiple times
+                        for multiple addresses
 ```
 
 ### Example:
