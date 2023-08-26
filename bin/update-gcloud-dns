@@ -12,6 +12,7 @@ parser.add_argument("--ttl", help="TTL of the update record", default=60)
 parser.add_argument("--project_id", default=None, help="name of the GCP project")
 parser.add_argument("--credentials_file", default=None, help="file with credentials of service account for GCP project")
 parser.add_argument("--force_update", action="store_true", default=False, help="force the DNS update even if the record hasn't changed")
+parser.add_argument("--ip", required=False, action="append", help="specify the IP instead of using a public IP service, multiple cna be specified")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
@@ -22,4 +23,4 @@ if __name__ == "__main__":
         with open(args.credentials_file) as f:
             credentials = json.load(f)
 
-    update_dns(logging.getLogger(), args.zone_name, args.dns_name, args.ttl, args.force_update, args.project_id, credentials)
+    update_dns(logging.getLogger(), args.zone_name, args.dns_name, args.ttl, args.force_update, args.project_id, credentials, args.ip)
