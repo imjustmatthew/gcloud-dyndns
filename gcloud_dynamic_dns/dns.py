@@ -44,7 +44,7 @@ def my_ip(kind: Iterable[socket.AddressFamily] = IPV4_6, query_host: str = "ifco
 
 
 def update_dns(logger: logging.Logger, zone_name: str, dns_name: str, ttl: int = 60, force_update: bool = False,
-               project_id: Optional[str] = None, credentials: Optional[str] = None):
+               project_id: Optional[str] = None, credentials: Optional[str] = None, ip: Optional[str] = None):
     """
     Updates a GCP Cloud DNS zone with the host's current IP as it appears from the internet
     :param zone_name: the name of the zone in your GCP project
@@ -53,14 +53,19 @@ def update_dns(logger: logging.Logger, zone_name: str, dns_name: str, ttl: int =
     :param force_update: if True, the records will be updated even if they are not different
     :param project_id: the GCP project id
     :param credentials: GCP service account credentials dict
+    :param ip: array of IP address strings
     :return: the applied change set
     """
 
     if not dns_name.endswith("."):
         dns_name = "%s." % dns_name
 
-    addresses = my_ip()
-    logger.info("Found these external IP addresses: [%s]" % ", ".join(addresses))
+    if ip is not None:
+        addresses = ip
+        logger.info("Using these IP addresses from arguments: [%s]" % ", ".join(addresses))
+    else:
+        addresses = my_ip()
+        logger.info("Found these external IP addresses: [%s]" % ", ".join(addresses))
 
     existing_addresses = resolve_addresses(dns_name)
     logger.info("Found these IP addresses corresponding to domain '%s': [%s]" % (dns_name, ", ".join(existing_addresses)))
